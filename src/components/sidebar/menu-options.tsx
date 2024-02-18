@@ -8,7 +8,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
-import { ChevronsUpDown, Compass, Menu } from "lucide-react";
+import { ChevronsUpDown, Compass, Menu, PlusCircleIcon } from "lucide-react";
 import clsx from "clsx";
 import { AspectRatio } from "../ui/aspect-ratio";
 import Image from "next/image";
@@ -212,6 +212,12 @@ const MenuOptions = ({
                       : "No Accounts"}
                   </CommandGroup>
                 </CommandList>
+                {(user?.role === "AGENCY_OWNER" ||
+                  user?.role === "AGENCY_ADMIN") && (
+                  <Button className="w-full flex gap-2">
+                    <PlusCircleIcon size={15} /> Create Sub Account
+                  </Button>
+                )}
               </Command>
             </PopoverContent>
           </Popover>
