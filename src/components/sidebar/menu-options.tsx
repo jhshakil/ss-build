@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Agency,
   AgencySidebarOption,
   SubAccount,
   SubAccountSidebarOption,
@@ -22,6 +23,11 @@ import {
   CommandList,
 } from "../ui/command";
 import Link from "next/link";
+import { useModal } from "@/providers/modal-provider";
+import CustomModal from "../global/custom-modal";
+import SubAccountDetails from "../forms/subaccount-details";
+import { Separator } from "../ui/separator";
+import { icons } from "@/lib/constants";
 
 type Props = {
   defaultOpen?: boolean;
@@ -42,6 +48,7 @@ const MenuOptions = ({
   user,
   id,
 }: Props) => {
+  const { setOpen } = useModal();
   const [isMounted, setIsMounted] = useState(false);
   const openState = useMemo(
     () => (defaultOpen ? { open: true } : {}),
@@ -214,13 +221,66 @@ const MenuOptions = ({
                 </CommandList>
                 {(user?.role === "AGENCY_OWNER" ||
                   user?.role === "AGENCY_ADMIN") && (
-                  <Button className="w-full flex gap-2">
-                    <PlusCircleIcon size={15} /> Create Sub Account
-                  </Button>
+                  <SheetClose>
+                    <Button
+                      className="w-full flex gap-2"
+                      onClick={() => {
+                        setOpen(
+                          <CustomModal
+                            title="Create a subaccount"
+                            subheading="You can switch between your agency account and the subaccount form the sidebar"
+                          >
+                            <SubAccountDetails
+                              agencyDetails={user?.Agency as Agency}
+                              userId={user?.id as string}
+                              userName={user?.name}
+                            />
+                          </CustomModal>
+                        );
+                      }}
+                    >
+                      <PlusCircleIcon size={15} /> Create Sub Account
+                    </Button>
+                  </SheetClose>
                 )}
               </Command>
             </PopoverContent>
           </Popover>
+          <p className="text-muted-foreground text-xs mb-2">MENU LINKS</p>
+          <Separator className="mb-4" />
+          <nav className="relative">
+            <Command className="rounded-lg overflow-visible bg-transparent">
+              <CommandInput placeholder="Search..." />
+              <CommandList className="py-4 overflow-visible">
+                <CommandEmpty>No Results Found</CommandEmpty>
+                <CommandGroup className="overflow-visible">
+                  {sidebarOpt.map((sidebarOptions) => {
+                    let val;
+                    const result = icons.find(
+                      (icon) => icon.value === sidebarOptions.icon
+                    );
+                    if (result) {
+                      val = <result.path />;
+                    }
+                    return (
+                      <CommandItem
+                        key={sidebarOptions.id}
+                        className="md:w-[320px] w-full"
+                      >
+                        <Link
+                          href={sidebarOptions.link}
+                          className="flex items-center gap-2 hover:bg-transparent rounded-md transition-all md:w-full w-[320px]"
+                        >
+                          {val}
+                          <span>{sidebarOptions.name}</span>
+                        </Link>
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </nav>
         </div>
       </SheetContent>
     </Sheet>
