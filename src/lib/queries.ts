@@ -3,7 +3,7 @@
 import { clerkClient, currentUser } from "@clerk/nextjs";
 import { db } from "./db";
 import { redirect } from "next/navigation";
-import { Agency, Plan, Role, SubAccount, User } from "@prisma/client";
+import { Agency, Plan, Prisma, Role, SubAccount, User } from "@prisma/client";
 import { v4 } from "uuid";
 import { CreateMediaType } from "./types";
 
@@ -509,5 +509,48 @@ export const deleteMedia = async (mediaId: string) => {
       id: mediaId,
     },
   });
+  return response;
+};
+
+export const getPipelineDetails = async (pipelineId: string) => {
+  const response = await db.pipeline.findUnique({
+    where: {
+      id: pipelineId,
+    },
+  });
+
+  return response;
+};
+
+export const getLanesWithTicketAndTags = async (pipelineId: string) => {
+  const response = await db.lane.findMany({
+    where: { pipelineId },
+    orderBy: { order: "asc" },
+    include: {
+      Tickets: {
+        orderBy: {
+          order: "asc",
+        },
+        include: {
+          Tags: true,
+          Assigned: true,
+          Customer: true,
+        },
+      },
+    },
+  });
+
+  return response;
+};
+
+export const upsertPipeline = async (
+  pipeline: Prisma.PipelineUncheckedCreateWithoutLaneInput
+) => {
+  const response = await db.pipeline.upsert({
+    where: { id: pipeline.id || v4() },
+    update: pipeline,
+    create: pipeline,
+  });
+
   return response;
 };
