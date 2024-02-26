@@ -554,3 +554,10 @@ export const upsertPipeline = async (
 
   return response;
 };
+
+export const deletePipeline = async (pipelineId: string) => {
+  const response = await db.pipeline.delete({
+    where: { id: pipelineId },
+  });
+  return response;
+};
