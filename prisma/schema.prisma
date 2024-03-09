@@ -406,8 +406,8 @@ model Notification {
 }
 
 enum Plan {
-  price_1OYxkqFj9oKEERu1NbKUxXxN
-  price_1OYxkqFj9oKEERu1KfJGWxgN
+  price_1OsQeCGxt14VauoBDzuCTkaR
+  price_1OsQgvGxt14VauoBNtKnJytC
 }
 
 model Subscription {
