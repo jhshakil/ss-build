@@ -15,7 +15,8 @@ import {
   User,
 } from "@prisma/client";
 import { v4 } from "uuid";
-import { CreateMediaType } from "./types";
+import { CreateFunnelFormSchema, CreateMediaType } from "./types";
+import { z } from "zod";
 
 export const getAuthUserDetails = async () => {
   const user = await currentUser();
@@ -775,5 +776,32 @@ export const upsertContact = async (
     update: contact,
     create: contact,
   });
+  return response;
+};
+
+export const getFunnels = async (subacountId: string) => {
+  const funnels = await db.funnel.findMany({
+    where: { subAccountId: subacountId },
+    include: { FunnelPages: true },
+  });
+
+  return funnels;
+};
+
+export const upsertFunnel = async (
+  subaccountId: string,
+  funnel: z.infer<typeof CreateFunnelFormSchema> & { liveProducts: string },
+  funnelId: string
+) => {
+  const response = await db.funnel.upsert({
+    where: { id: funnelId },
+    update: funnel,
+    create: {
+      ...funnel,
+      id: funnelId || v4(),
+      subAccountId: subaccountId,
+    },
+  });
+
   return response;
 };
