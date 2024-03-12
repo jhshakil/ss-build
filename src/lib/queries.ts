@@ -805,3 +805,29 @@ export const upsertFunnel = async (
 
   return response;
 };
+
+export const getFunnel = async (funnelId: string) => {
+  const funnel = await db.funnel.findUnique({
+    where: { id: funnelId },
+    include: {
+      FunnelPages: {
+        orderBy: {
+          order: "asc",
+        },
+      },
+    },
+  });
+
+  return funnel;
+};
+
+export const updateFunnelProducts = async (
+  products: string,
+  funnelId: string
+) => {
+  const data = await db.funnel.update({
+    where: { id: funnelId },
+    data: { liveProducts: products },
+  });
+  return data;
+};
